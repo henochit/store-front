@@ -18,6 +18,9 @@
             :items="produits"
             :search="search"
           >
+          <template v-slot:item.packetage="{ item }">
+            <span>{{ item.packetage.label }}</span>
+          </template>
           <template v-slot:item.action="{ item }">
           <v-icon
             small
@@ -61,7 +64,7 @@
           </v-card-text>
         </v-card>
 
-        <br/>>
+        <br/>
 
         <v-card>
               <v-card-title>

@@ -42,6 +42,12 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.packetage="{ item }">
+      <span>{{ item.packetage.label }}</span>
+    </template>
+    <template v-slot:item.categorie="{ item }">
+      <span>{{ item.categorie.label }}</span>
+    </template>
     <template v-slot:item.action="{ item }">
       <v-icon
         small
@@ -110,26 +116,7 @@
 
     methods: {
       async initialize () {
-        this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
-        this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
         this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
-
-        for(let produit of this.produits) {
-
-          for(let cat of this.categories){
-            if(produit.categorie == cat.id){
-              produit.categorie = cat.label;
-              break;
-            }
-          }
-          
-          for(let pack of this.packetages){
-            if(produit.packetage == pack.id){
-              produit.packetage = pack.label;
-              break;
-            }
-          }
-        };
       },
 
       editItem (item) {

@@ -74,7 +74,6 @@
                   </v-col>
                 </v-row>
 
-                    <template>
                       <v-toolbar flat color="white">
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialog" max-width="500px">
@@ -98,9 +97,6 @@
                           </v-card>
                         </v-dialog>
                       </v-toolbar>
-                    </template>
-
-                    <template>
                       <v-toolbar flat color="white">
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialogCat" max-width="500px">
@@ -124,10 +120,6 @@
                           </v-card>
                         </v-dialog>
                       </v-toolbar>
-                    </template>
-
-                <br/>
-                <br/>
 
                 <v-btn
                   color="success"
