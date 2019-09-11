@@ -60,7 +60,7 @@
           </v-card-text>
         </v-card>
 
-        </br>
+        <br/>
 
         <v-card>
               <v-card-title>
@@ -68,7 +68,7 @@
                 <div class="flex-grow-1"></div>
               </v-card-title>
               <template>
-                <v-simple-table dense>
+                <v-simple-table dense dark>
                   <thead>
                     <tr>
                       <th class="text-left">Name</th>

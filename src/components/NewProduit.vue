@@ -79,7 +79,7 @@
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialog" max-width="500px">
                           <v-card>
-                           <v-card-title class="headline">Nouvelle Categorie</v-card-title>
+                           <v-card-title class="headline">Nouvelle Packetage</v-card-title>
                             <v-card-text>
                               <v-container>
                                 <v-row>
@@ -105,7 +105,7 @@
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialogCat" max-width="500px">
                           <v-card>
-                           <v-card-title class="headline">Nouvelle Categorie</v-card-title>
+                           <v-card-title class="headline">Nouveau Categorie</v-card-title>
                             <v-card-text>
                               <v-container>
                                 <v-row>
