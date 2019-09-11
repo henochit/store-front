@@ -5,7 +5,6 @@
       dense
     >
       <v-toolbar-title>Produits</v-toolbar-title>
-      </v-menu>
     </v-app-bar>
 
     <br/>

@@ -59,19 +59,22 @@
                 ></v-divider>
                 <v-col cols="3" sm="3" md="3">
                   <v-select
+                    v-model="produit"
                     :items="produits"
                     label="Produit"
                     item-text="nom"
-                    item-value="produit"
-                    :change="byProduit()"
+                    item-value="id"
+                    v-on:change="byProduit()"
                   ></v-select>
                 </v-col>
                 <v-col cols="3" sm="3" md="3">
                   <v-select
+                    v-model="categorie"
                     :items="categories"
                     label="Categorie"
                     item-text="label"
                     item-value="id"
+                    v-on:change="byCategorie()"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -95,12 +98,23 @@
                   </tr>
                 </tbody>
               </v-simple-table>
+              <v-btn
+                      color="success"
+                      @click="exportPdf()"
+                    >
+                      Imprimer Rapport
+                    </v-btn>
             </template>
   </div>
 </template>
 
 <script>
+
+  import jsPDF from 'jspdf'
+  import * as autoTable from 'jspdf-autotable'
+
   export default {
+
     data () {
       return {
       dateDebut: null,
@@ -129,6 +143,9 @@
         this.entreesFiltered = this.entrees;
       },
       fromTo () {
+        this.produit = null;
+        this.categorie = null;
+
         if( this.dateDebut != null && this.dateFin != null){
           var dateD = new Date(this.dateDebut);
           var dateF = new Date(this.dateFin);
@@ -142,11 +159,75 @@
         
       },
       byProduit(){
+          this.categorie = null;
+          var prod = this.produit;
+          if( this.dateDebut != null && this.dateFin != null){
+            var dateD = new Date(this.dateDebut);
+            var dateF = new Date(this.dateFin);
 
+            this.entreesFiltered = this.entrees.filter(function (e) {
+                            return (new Date(e.createdAt) >= dateD && new Date(e.createdAt) <= dateF && e.produit.id == prod);
+                          });
+
+        }else{
           this.entreesFiltered = this.entrees.filter(function (e) {
-                            return (e.produit.id == this.produit);
+                            return (e.produit.id == prod);
                         });
-      }
+
+        }
+      },
+      byCategorie(){
+          this.produit = null;
+          var cat = this.categorie;
+          if( this.dateDebut != null && this.dateFin != null){
+            var dateD = new Date(this.dateDebut);
+            var dateF = new Date(this.dateFin);
+
+            this.entreesFiltered = this.entrees.filter(function (e) {
+                            return (new Date(e.createdAt) >= dateD && new Date(e.createdAt) <= dateF && e.produit.categorie == cat);
+                          });
+
+        }else{
+          this.entreesFiltered = this.entrees.filter(function (e) {
+                            return (e.produit.categorie == cat);
+                        });
+
+        }
+      },exportPdf(){
+          var vm = this
+          
+          var columns = ["Date", "Produit", "Categorie", "Packetage", "Quantite"]; 
+
+          var rows = [];
+
+          for(let e of vm.entreesFiltered){
+              rows.push([e.createdAt, e.produit.nom, e.produit.categorie, e.produit.packetage, e.quantite])
+          }
+
+          var title = 'Rapport des entrees';
+
+          if(vm.produit != null){
+            title = title + ' du produit ' + vm.produit
+            if(this.dateDebut != null && this.dateFin != null){
+              title = title + " du "+ this.dateDebut +" au "+ this.dateFin;
+            }
+          }else if(vm.categorie != null){
+            title = title + ' de la categorie ' + vm.categorie
+            if(this.dateDebut != null && this.dateFin != null){
+              title = title + " du "+ this.dateDebut +" au "+ this.dateFin;
+            }
+
+          }else{
+            if(this.dateDebut != null && this.dateFin != null){
+              title = title + " du "+ this.dateDebut +" au "+ this.dateFin;
+            }
+          }
+            
+          var doc = new jsPDF('p', 'pt');
+          doc.text(title,20,20)
+          doc.autoTable(columns, rows);
+          doc.save(title+'.pdf');
+        }
     }
   }
 </script>
