@@ -159,6 +159,7 @@
                     label: this.newPack,
                 });
        this.initialisation();
+       this.newPack="";
        this.dialog = false;
       },
       async newCategorie(){
@@ -166,6 +167,7 @@
                     label: this.newCat,
                 });
        this.initialisation();
+       this.newCat = "";
        this.dialogCat = false;
       },
       async newProduit(){

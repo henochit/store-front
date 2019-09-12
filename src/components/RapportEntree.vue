@@ -83,17 +83,17 @@
                   <tr>
                     <th class="text-left">Date</th>
                     <th class="text-left">Produit</th>
-                    <th class="text-left">Categorie</th>
                     <th class="text-left">Packetage</th>
+                    <th class="text-left">Categorie</th>
                     <th class="text-left">Quantite entrees</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="item in entreesFiltered" :key="item.id">
-                    <td>{{ item.createdAt }}</td>
+                    <td>{{ item.createdAt| moment("d/MM/YYYY - h:mm:ss ") }}</td>
                     <td>{{ item.produit.nom }}</td>
-                    <td>{{ item.produit.packetage }}</td>
-                    <td>{{ item.produit.categorie }}</td>
+                    <td>{{ getPackName(item.produit.packetage) }}</td>
+                    <td>{{ getCatName(item.produit.categorie) }}</td>
                     <td>{{ item.quantite }}</td>
                   </tr>
                 </tbody>
@@ -112,6 +112,7 @@
 
   import jsPDF from 'jspdf'
   import * as autoTable from 'jspdf-autotable'
+  import moment from 'moment'
 
   export default {
 
@@ -124,6 +125,7 @@
       menu1: false,
       produits: [],
       categories: [],
+      packetages: [],
       entrees: [],
       entreesFiltered: [],
       produit: null,
@@ -136,9 +138,10 @@
 
     methods: {
       async initialize () {
-        this.entrees = (await this.axios.get('http://localhost:1337/entree')).data;
         this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+        this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
         this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
+        this.entrees = (await this.axios.get('http://localhost:1337/entree')).data;
 
         this.entreesFiltered = this.entrees;
       },
@@ -193,6 +196,24 @@
                         });
 
         }
+      },getCatName(id) {
+          for(var cat of this.categories){
+            if(cat.id == id){
+              return cat.label;
+            }
+          }
+      },getPackName(id) {
+          for(var pk of this.packetages){
+            if(pk.id == id){
+              return pk.label;
+            }
+          }
+      },getProdName(id) {
+          for(var p of this.produits){
+            if(p.id == id){
+              return p.nom;
+            }
+          }
       },exportPdf(){
           var vm = this
           
@@ -201,18 +222,18 @@
           var rows = [];
 
           for(let e of vm.entreesFiltered){
-              rows.push([e.createdAt, e.produit.nom, e.produit.categorie, e.produit.packetage, e.quantite])
+              rows.push([moment(e.createdAt).format('d/MM/YYYY - h:mm:ss '), e.produit.nom, vm.getCatName(e.produit.categorie) , vm.getPackName(e.produit.packetage), e.quantite])
           }
 
           var title = 'Rapport des entrees';
 
           if(vm.produit != null){
-            title = title + ' du produit ' + vm.produit
+            title = title + ' du produit ' + vm.getProdName(vm.produit)
             if(this.dateDebut != null && this.dateFin != null){
               title = title + " du "+ this.dateDebut +" au "+ this.dateFin;
             }
           }else if(vm.categorie != null){
-            title = title + ' de la categorie ' + vm.categorie
+            title = title + ' de la categorie ' + vm.getCatName(vm.categorie)
             if(this.dateDebut != null && this.dateFin != null){
               title = title + " du "+ this.dateDebut +" au "+ this.dateFin;
             }

@@ -8,12 +8,14 @@ import Sortie from './components/Sortie.vue'
 import RapportEntree from './components/RapportEntree.vue'
 import RapportSortie from './components/RapportSortie.vue'
 import Stock from './components/Stock.vue'
+import Page from './components/Page.vue'
 
 
 const routes = [
     { path: '/', component: Login, name: "login" },
-    { path: '/home', component: Home, name: "home" ,
+    { path: '/menu', component: Home, name: "home" ,
     children: [
+        { path: '/home', component: Page, name: "page" },
         { path: '/newProduit', component: NewProduit, name: "newProduit" },
         { path: '/produits', component: Produits, name: "produits" },
         { path: '/entree', component: Entree, name: "entree" },

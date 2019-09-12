@@ -15,7 +15,11 @@ import routes from './routes';
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(VueAxios, axios)
-Vue.use(VueFilterDateFormat);
+Vue.use(VueFilterDateFormat);import VueMoment from 'vue-moment';
+Vue.use(VueMoment);
+
+const moment = require('moment')
+require('moment/locale/es')
 
 const router = new VueRouter({routes});
 
@@ -23,6 +27,7 @@ new Vue({
   vuetify,
   router,
   jsPDF,
+  moment,
   VueAxios,
   VueFilterDateFormat,
   render: h => h(App),
