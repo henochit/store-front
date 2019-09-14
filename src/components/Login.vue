@@ -67,11 +67,9 @@ export default {
   },
   methods: {
       login() {
-          if(this.login != "" && this.password != "") {
+          if(this.login != "" && this.password != "" && this.username == "harmony19" && this.password == "2019@harmony") {
               this.$router.push("/home");
-          } else {
-              console.log("A username and password must be present");
-          }
+          } 
       }
   }
 };

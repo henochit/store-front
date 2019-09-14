@@ -1,5 +1,11 @@
 <template>
-  <div>
+  <v-container class="grey lighten-5">
+     <v-app-bar
+      color="amber accent-3"
+      dense
+    >
+      <v-toolbar-title>Rapport des entrees</v-toolbar-title>
+    </v-app-bar>
     <template>
               <v-row>
                 <v-col cols="2" sm="2" md="2">
@@ -57,7 +63,7 @@
                   inset
                   vertical
                 ></v-divider>
-                <v-col cols="3" sm="3" md="3">
+                <v-col cols="2" sm="2" md="2">
                   <v-select
                     v-model="produit"
                     :items="produits"
@@ -67,7 +73,7 @@
                     v-on:change="byProduit()"
                   ></v-select>
                 </v-col>
-                <v-col cols="3" sm="3" md="3">
+                <v-col cols="2" sm="2" md="2">
                   <v-select
                     v-model="categorie"
                     :items="categories"
@@ -76,6 +82,13 @@
                     item-value="id"
                     v-on:change="byCategorie()"
                   ></v-select>
+                </v-col>
+                <v-col cols="2" sm="2" md="2">
+                  <v-text-field
+                    v-model="motif"
+                    v-on:input="byMotif()"
+                    label="Motif"
+                  ></v-text-field>
                 </v-col>
               </v-row>
               <v-simple-table dense>
@@ -86,18 +99,21 @@
                     <th class="text-left">Packetage</th>
                     <th class="text-left">Categorie</th>
                     <th class="text-left">Quantite entrees</th>
+                    <th class="text-left">Motif</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="item in entreesFiltered" :key="item.id">
-                    <td>{{ item.createdAt| moment("d/MM/YYYY - h:mm:ss ") }}</td>
+                    <td>{{ item.createdAt| moment("D/MM/YYYY - h:mm:ss ") }}</td>
                     <td>{{ item.produit.nom }}</td>
                     <td>{{ getPackName(item.produit.packetage) }}</td>
                     <td>{{ getCatName(item.produit.categorie) }}</td>
                     <td>{{ item.quantite }}</td>
+                    <td>{{ item.motif }}</td>
                   </tr>
                 </tbody>
               </v-simple-table>
+    <br/>
               <v-btn
                       color="success"
                       @click="exportPdf()"
@@ -105,7 +121,7 @@
                       Imprimer Rapport
                     </v-btn>
             </template>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -129,7 +145,8 @@
       entrees: [],
       entreesFiltered: [],
       produit: null,
-      categorie: null, 
+      categorie: null,
+      motif: "",  
       }
     },
     async mounted () {
@@ -141,7 +158,7 @@
         this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
         this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
         this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
-        this.entrees = (await this.axios.get('http://localhost:1337/entree')).data;
+        this.entrees = (await this.axios.get('http://localhost:1337/entree?sort=createdAt+desc')).data;
 
         this.entreesFiltered = this.entrees;
       },
@@ -196,6 +213,24 @@
                         });
 
         }
+      },
+      byMotif(){
+          this.produit = null;
+          var motif_ = this.motif;
+          if( this.dateDebut != null && this.dateFin != null){
+            var dateD = new Date(this.dateDebut);
+            var dateF = new Date(this.dateFin);
+
+            this.entreesFiltered = this.entrees.filter(function (e) {
+                            return (new Date(e.createdAt) >= dateD && new Date(e.createdAt) <= dateF && (e.motif.toUpperCase()).includes(motif_.toUpperCase()));
+                          });
+
+        }else{
+          this.entreesFiltered = this.entrees.filter(function (e) {
+                            return (e.motif.toUpperCase()).includes(motif_.toUpperCase())
+                        });
+
+        }
       },getCatName(id) {
           for(var cat of this.categories){
             if(cat.id == id){
@@ -217,12 +252,12 @@
       },exportPdf(){
           var vm = this
           
-          var columns = ["Date", "Produit", "Categorie", "Packetage", "Quantite"]; 
+          var columns = ["Date", "Produit", "Categorie", "Packetage", "Quantite", "Motif"]; 
 
           var rows = [];
 
           for(let e of vm.entreesFiltered){
-              rows.push([moment(e.createdAt).format('d/MM/YYYY - h:mm:ss '), e.produit.nom, vm.getCatName(e.produit.categorie) , vm.getPackName(e.produit.packetage), e.quantite])
+              rows.push([moment(e.createdAt).format('D/MM/YYYY - h:mm:ss '), e.produit.nom, vm.getCatName(e.produit.categorie) , vm.getPackName(e.produit.packetage), e.quantite, e.motif])
           }
 
           var title = 'Rapport des entrees';

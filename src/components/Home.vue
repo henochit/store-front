@@ -7,13 +7,16 @@
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <span class="title ml-3 mr-5">Harmony<span class="font-weight-light">trading</span></span>
-      <v-text-field
-        solo-inverted
-        flat
-        hide-details
-        label="Search"
-      ></v-text-field>
+      
       <div class="flex-grow-1"></div>
+
+
+      <v-btn 
+      icon
+      v-on:click="logout()">
+        <v-icon>mdi-logout</v-icon>
+      </v-btn>
+
     </v-app-bar>
 
     <v-navigation-drawer
@@ -155,7 +158,9 @@
     methods: {
         goTo( url ) {
             this.$router.push(url);
-        }
+        },logout() {
+              this.$router.push("/");
+          } 
     }
   }
 </script>

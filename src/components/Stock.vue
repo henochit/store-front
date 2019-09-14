@@ -6,20 +6,6 @@
     >
       <v-toolbar-title>Stock</v-toolbar-title>
     </v-app-bar>
-              <v-row>
-                <v-col cols="9" sm="9" md="9">
-                </v-col>
-                <v-col cols="3" sm="3" md="3">
-                  <v-select
-                    v-model="categorie"
-                    :items="categories"
-                    label="Categorie"
-                    item-text="label"
-                    item-value="id"
-                    v-on:change="byCategorie()"
-                  ></v-select>
-                </v-col>
-              </v-row>
     <br/>
       <v-card>
           <v-card-title>
@@ -31,6 +17,14 @@
               single-line
               hide-details
             ></v-text-field>
+             <v-select
+                    v-model="categorie"
+                    :items="categories"
+                    label="Categorie"
+                    item-text="label"
+                    item-value="id"
+                    v-on:change="byCategorie()"
+                  ></v-select>
           </v-card-title>
            <v-data-table
               :headers="headers"
@@ -52,7 +46,7 @@
           </v-data-table>
         </v-card>
       
-  </v-data-table>
+    <br/>
               <v-btn
                       color="success"
                       @click="exportPdf()"
@@ -66,8 +60,7 @@
 
   import jsPDF from 'jspdf'
   import * as autoTable from 'jspdf-autotable'
-  import moment from 'moment'
-
+  
   export default {
     data: () => ({
       dialog: false,

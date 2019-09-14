@@ -1,6 +1,13 @@
 <template>
   <v-container class="grey lighten-5">
-    <v-row no-gutters>
+     <v-app-bar
+      color="amber accent-3"
+      dense
+    >
+      <v-toolbar-title>Nouvel entree</v-toolbar-title>
+    </v-app-bar>
+    <br/>
+    <v-row>
       <v-col cols="12" sm="6">
         <v-card>
           <v-card-title>
@@ -17,6 +24,7 @@
             :headers="headers"
             :items="produits"
             :search="search"
+            dense
           >
           <template v-slot:item.packetage="{ item }">
             <span>{{ item.packetage.label }}</span>
@@ -37,10 +45,18 @@
         <v-card>
           <v-card-text>
               <v-row>
-              <v-col cols="6" sm="6">
+              <v-col cols="3" sm="3">
                 <v-text-field
                   v-model="produitSelect.nom"
                   label="Product"
+                  required
+                  readonly
+                ></v-text-field>
+              </v-col>
+              <v-col cols="3" sm="3">
+                <v-text-field
+                  v-model="motif"
+                  label="Motif"
                   required
                 ></v-text-field>
               </v-col>
@@ -121,6 +137,7 @@
           packetages: [],
           entrees: [],
           qte: 0,
+          motif: '',
           produitSelect: {
               nom: '',
               code: '',
@@ -145,7 +162,7 @@
               break;
             }
           }
-        };
+        }
       },
       addProduit(item) {
         this.produitSelect = Object.assign({}, item);
@@ -163,7 +180,8 @@
         }
         this.entrees.push({ 
           produit: this.produitSelect,
-          qte: Number(this.qte)});
+          qte: Number(this.qte),
+          motif: this.motif});
         this.qte = 0;
       },
       async saveEntree(){
@@ -175,7 +193,8 @@
           await this.axios.post('http://localhost:1337/entree', {
                     date: dateStr,
                     quantite: entree.qte,
-                    produit: entree.produit.id
+                    produit: entree.produit.id,
+                    motif: entree.motif
                 });
         }
 
