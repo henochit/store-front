@@ -53,6 +53,21 @@
                     >
                       Imprimer la liste
                     </v-btn>
+    
+      <v-snackbar
+        :color="colorMessage"
+        v-model="printMessage"
+        :timeout="2000"
+      >
+        {{ message }}
+        <v-btn
+          color="blue"
+          text
+          @click="printMessage = false"
+        >
+          Close
+        </v-btn>
+      </v-snackbar>
   </v-container>
 </template>
 
@@ -64,6 +79,9 @@
   export default {
     data: () => ({
       dialog: false,
+      printMessage: false,
+      message: '',
+      colorMessage: '',
       headers: [
         {
           text: 'Noms',
@@ -114,9 +132,17 @@
 
     methods: {
       async initialize () {
-        this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
-        this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
-        this.produitsTemp = this.produits;
+        try {
+          this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+          this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
+          this.produitsTemp = this.produits;
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
       },
 
       editItem (item) {

@@ -121,6 +121,20 @@
                       Imprimer Rapport
                     </v-btn>
             </template>
+            <v-snackbar
+              :color="colorMessage"
+              v-model="printMessage"
+              :timeout="2000"
+            >
+              {{ message }}
+              <v-btn
+                color="blue"
+                text
+                @click="printMessage = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
   </v-container>
 </template>
 
@@ -145,7 +159,10 @@
       sortiesFiltered: [],
       produit: null,
       categorie: null, 
-      motif: "",  
+      motif: "",
+      printMessage: false,
+      message: '',
+      colorMessage: '',  
       }
     },
     async mounted () {
@@ -154,12 +171,20 @@
 
     methods: {
       async initialize () {
-        this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
-        this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
-        this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
-        this.sorties = (await this.axios.get('http://localhost:1337/sortie?sort=createdAt+desc')).data;
+        try {
+          this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+          this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
+          this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
+          this.sorties = (await this.axios.get('http://localhost:1337/sortie?sort=createdAt+desc')).data;
 
-        this.sortiesFiltered = this.sorties;
+          this.sortiesFiltered = this.sorties;
+          }
+          catch(error) {
+            this.message = "Erreur de connexion au serveur"
+            this.colorMessage = "error"
+            this.printMessage = true
+            console.error(error);
+          }
       },
       fromTo () {
         this.produit = null;

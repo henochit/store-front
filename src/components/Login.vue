@@ -48,6 +48,20 @@
             </v-card>
           </v-col>
         </v-row>
+        <v-snackbar
+          :color="colorMessage"
+          v-model="printMessage"
+          :timeout="2000"
+        >
+          {{ message }}
+          <v-btn
+            color="blue"
+            text
+            @click="printMessage = false"
+          >
+            Close
+          </v-btn>
+        </v-snackbar>
       </v-container>
     </v-content>
 </template>
@@ -62,14 +76,21 @@ export default {
   data(){
     return {
                 username: "",
-                password: ""
+                password: "",
+                printMessage: false,
+                message: '',
+                colorMessage: '',
             }
   },
   methods: {
       login() {
           if(this.login != "" && this.password != "" && this.username == "harmony19" && this.password == "2019@harmony") {
               this.$router.push("/home");
-          } 
+          } else{
+            this.message = "Informations incorrectes"
+            this.colorMessage = 'error'
+            this.printMessage = true
+          }
       }
   }
 };

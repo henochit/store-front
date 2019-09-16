@@ -78,7 +78,7 @@
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialog" max-width="500px">
                           <v-card>
-                           <v-card-title class="headline">Nouvelle Packetage</v-card-title>
+                           <v-card-title class="headline">Nouveau Packetage</v-card-title>
                             <v-card-text>
                               <v-container>
                                 <v-row>
@@ -101,7 +101,7 @@
                         <div class="flex-grow-1"></div>
                         <v-dialog v-model="dialogCat" max-width="500px">
                           <v-card>
-                           <v-card-title class="headline">Nouveau Categorie</v-card-title>
+                           <v-card-title class="headline">Nouvelle Categorie</v-card-title>
                             <v-card-text>
                               <v-container>
                                 <v-row>
@@ -132,6 +132,20 @@
               </v-form>
       </v-col>
     </v-row>
+     <v-snackbar
+      :color="colorMessage"
+      v-model="printMessage"
+      :timeout="2000"
+    >
+      {{ message }}
+      <v-btn
+        color="blue"
+        text
+        @click="printMessage = false"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -142,6 +156,9 @@
     },
     data: () => ({
       drawer: null,
+      printMessage: false,
+      message: '',
+      colorMessage: '',
       dialog: false,
       dialogCat: false,
       categories: [],
@@ -155,37 +172,90 @@
     }),
     methods : {
       async newPacketage(){
-        await this.axios.post('http://localhost:1337/packetage', {
+        try {
+          await this.axios.post('http://localhost:1337/packetage', {
                     label: this.newPack,
                 });
-       this.initialisation();
-       this.newPack="";
-       this.dialog = false;
+
+          this.initialisation();
+          this.newPack="";
+          this.dialog = false;
+
+          this.message = "Packetage Inseré"
+          this.colorMessage = "success"
+          this.printMessage = true
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
+        
       },
       async newCategorie(){
-        await this.axios.post('http://localhost:1337/categorie', {
+        try {
+          await this.axios.post('http://localhost:1337/categorie', {
                     label: this.newCat,
                 });
-       this.initialisation();
-       this.newCat = "";
-       this.dialogCat = false;
+
+          this.initialisation();
+          this.newCat = "";
+          this.dialogCat = false;
+
+
+          this.message = "Categorie Inserée"
+          this.colorMessage = "success"
+          this.printMessage = true
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
+        
       },
       async newProduit(){
-        await this.axios.post('http://localhost:1337/produit', {
+        try {
+          await this.axios.post('http://localhost:1337/produit', {
                     code: this.code,
                     nom: this.nom,
                     packetage: this.packetage,
                     stock: 0,
                     categorie: this.categorie
                 });
-        this.code = "";
-        this.nom = "";
-        this.packetage = null;
-        this.categorie = null;
+
+          this.code = "";
+          this.nom = "";
+          this.packetage = null;
+          this.categorie = null;
+
+
+          this.message = "Produit Inseré"
+          this.colorMessage = "success"
+          this.printMessage = true
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
+        
       },
       async initialisation(){
+        try {
         this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
         this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
+      
+        }
+        catch(error) {
+            this.message = "Erreur de connexion au serveur"
+            this.colorMessage = "error"
+            this.printMessage = true
+            console(error);
+        }
       }
     },
     async mounted () {

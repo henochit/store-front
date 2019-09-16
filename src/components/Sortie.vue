@@ -76,6 +76,20 @@
                 </v-btn>
               </v-col>
             </v-row>
+            <v-snackbar
+              :color="colorMessage"
+              v-model="printMessage"
+              :timeout="2000"
+            >
+              {{ message }}
+              <v-btn
+                color="blue"
+                text
+                @click="printMessage = false"
+              >
+                Close
+              </v-btn>
+            </v-snackbar>
           </v-card-text>
         </v-card>
 
@@ -123,6 +137,9 @@
     data () {
         return {
           search: '',
+          printMessage: false,
+          message: '',
+          colorMessage: '',
           headers: [
           {
             text: 'Noms',
@@ -152,16 +169,24 @@
 
     methods: {
       async initialize () {
-        this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
-        this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+        try {
+          this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
+          this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
 
-        for(let produit of this.produits) {
-         for(let pack of this.packetages){
-            if(produit.packetage == pack.id){
-              produit.packetage = pack.label;
-              break;
-            }
+          for(let produit of this.produits) {
+            for(let pack of this.packetages){
+                if(produit.packetage == pack.id){
+                  produit.packetage = pack.label;
+                  break;
+                }
+              }
           }
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
         }
       },
       addProduit(item) {
@@ -185,21 +210,33 @@
         this.qte = 0;
       },
       async saveSortie(){
-        var date = new Date();
-        var dateStr= date.getFullYear() + '-' +(date.getMonth() + 1) + '-' + date.getDate();
-        
-        for(let sortie of this.sorties){
+         try {
+          var date = new Date();
+          var dateStr= date.getFullYear() + '-' +(date.getMonth() + 1) + '-' + date.getDate();
+          
+          for(let sortie of this.sorties){
 
-          await this.axios.post('http://localhost:1337/sortie', {
-                    date: dateStr,
-                    quantite: sortie.qte,
-                    produit: sortie.produit.id,
-                    motif: sortie.motif
-                });
+            await this.axios.post('http://localhost:1337/sortie', {
+                      date: dateStr,
+                      quantite: sortie.qte,
+                      produit: sortie.produit.id,
+                      motif: sortie.motif
+                  });
+          }
+
+          this.sorties = [];
+          this.initialize();
+
+          this.message = "Soties Effectuées"
+          this.colorMessage = "success"
+          this.printMessage = true
+          
+        }catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
         }
-
-        this.sorties = [];
-        this.initialize();
       }
     }
   }

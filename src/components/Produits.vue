@@ -8,9 +8,16 @@
     </v-app-bar>
 
     <br/>
+    <v-text-field
+              v-model="search"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
        <v-data-table
     :headers="headers"
     :items="produits"
+    :search="search"
     sort-by="nom"
     class="elevation-1"
   >
@@ -28,14 +35,48 @@
                   <v-col cols="12" sm="6" md="12">
                     <v-text-field v-model="editedItem.code" label="Code"></v-text-field>
                   </v-col>
+                  <v-col cols="12" sm="6" md="12">
+                  <v-select
+                      v-model="categorie"
+                      :items="categories"
+                      item-text="label"
+                      item-value="id"
+                      label="categorie"
+                      required
+                    ></v-select>
+                  </v-col>
+                  <v-col cols="12" sm="6" md="12">
+                  <v-select
+                      v-model="packetage"
+                      :items="packetages"
+                      item-text="label"
+                      item-value="id"
+                      label="packetage"
+                      required
+                    ></v-select>
+                  </v-col>
                 </v-row>
+                <v-snackbar
+                  :color="colorMessage"
+                  v-model="printMessage"
+                  :timeout="2000"
+                >
+                  {{ message }}
+                  <v-btn
+                    color="blue"
+                    text
+                    @click="printMessage = false"
+                  >
+                    Close
+                  </v-btn>
+                </v-snackbar>
               </v-container>
             </v-card-text>
 
             <v-card-actions>
               <div class="flex-grow-1"></div>
               <v-btn color="blue darken-1" text @click="close">Annuler</v-btn>
-              <v-btn color="blue darken-1" text @click="save">Enregistrer</v-btn>
+              <v-btn color="blue darken-1" text @click="updateProduit()">Enregistrer</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -67,6 +108,10 @@
   export default {
     data: () => ({
       dialog: false,
+      printMessage: false,
+      message: '',
+      colorMessage: '',
+      search: "",
       headers: [
         {
           text: 'Noms',
@@ -87,9 +132,10 @@
       editedItem: {
         name: '',
         code: '',
-        packetage: null,
-        categorie: null,
+        id: '',
       },
+      packetage: null,
+      categorie: null,
       defaultItem: {
         name: '',
         code: '',
@@ -97,30 +143,53 @@
       },
     }),
 
-    computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-      },
-    },
-
-    watch: {
-      dialog (val) {
-        val || this.close()
-      },
-    },
-
     async mounted () {
       this.initialize()
     },
 
     methods: {
       async initialize () {
-        this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+        try {
+          this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+          this.categories = (await this.axios.get('http://localhost:1337/categorie')).data;
+          this.packetages = (await this.axios.get('http://localhost:1337/packetage')).data;
+      
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
+      },
+      async updateProduit(){
+        try {
+          await this.axios.put('http://localhost:1337/produit/'+this.editedItem.id, {
+                    code: this.editedItem.code,
+                    nom: this.editedItem.nom,
+                    packetage: this.packetage,
+                    categorie: this.categorie
+                });
+
+          
+          this.message = "Produit Modifié"
+          this.colorMessage = "success"
+          this.printMessage = true
+
+          this.produits = (await this.axios.get('http://localhost:1337/produit')).data;
+        }
+        catch(error) {
+          this.message = "Erreur de connexion au serveur"
+          this.colorMessage = "error"
+          this.printMessage = true
+          console.error(error);
+        }
       },
 
       editItem (item) {
-        this.editedIndex = this.produits.indexOf(item)
-        this.editedItem = Object.assign({}, item)
+        this.editedItem = item
+        this.categorie = item.categorie.id
+        this.packetage = item.packetage.id
         this.dialog = true
       },
       close () {
@@ -129,15 +198,6 @@
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedIndex = -1
         }, 300)
-      },
-
-      save () {
-        if (this.editedIndex > -1) {
-          Object.assign(this.desserts[this.editedIndex], this.editedItem)
-        } else {
-          this.desserts.push(this.editedItem)
-        }
-        this.close()
       },
     },
   }
