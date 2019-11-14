@@ -9,7 +9,7 @@
     <br/>
       <v-card>
           <v-card-title>
-            Produit
+            Produits
             <div class="flex-grow-1"></div>
             <v-text-field
               v-model="search"

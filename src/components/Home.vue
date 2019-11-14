@@ -24,10 +24,24 @@
       app
       clipped
       color="grey lighten-4"
-    >
-      <v-list
+    > <v-list>
+        <v-list-item>
+          <v-list-item-icon>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-icon>
+  
+          <v-list-item-title>Home</v-list-item-title>
+        </v-list-item>
+  
+        <v-list-group
+          prepend-icon="mdi-archive"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>Produit</v-list-item-title>
+          </template>
+          <v-list
         dense
-        class="grey lighten-4"
+        class="lime lighten-5"
       >
           <v-row align="center">
             <v-col cols="6">
@@ -134,6 +148,42 @@
             </v-list-item-content>
           </v-list-item>
       </v-list>
+        </v-list-group>
+
+        <v-list-group
+          prepend-icon="mdi-account"
+        >
+          <template v-slot:activator>
+            <v-list-item-title>Fournisseur</v-list-item-title>
+          </template>
+          <v-list
+        dense
+        class="lime lighten-5"
+      >
+          <v-list-item @click="goTo('/fournisseur')">
+             <v-list-item-action>
+              <v-icon color="green darken-2">mdi-account-check</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title class="grey--text">
+               Nouveau fournisseur
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item @click="goTo('/activite')">
+             <v-list-item-action>
+              <v-icon color="green darken-2">mdi-account-multiple</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title class="grey--text">
+               Liste des forunisseurs
+              </v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+      </v-list>
+        </v-list-group>
+      </v-list>
+      
     </v-navigation-drawer>
 
     <v-content>

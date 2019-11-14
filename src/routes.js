@@ -9,6 +9,8 @@ import RapportEntree from './components/RapportEntree.vue'
 import RapportSortie from './components/RapportSortie.vue'
 import Stock from './components/Stock.vue'
 import Page from './components/Page.vue'
+import Fournisseur from './components/Fournisseur.vue'
+import Activite from './components/Activite.vue'
 
 
 const routes = [
@@ -22,7 +24,9 @@ const routes = [
         { path: '/sorie', component: Sortie, name: "sortie" },
         { path: '/rapportEntree', component: RapportEntree, name: "rapportEntree" },
         { path: '/rapportSortie', component: RapportSortie, name: "rapportSortie" },
-        { path: '/stock', component: Stock, name: "stock" }
+        { path: '/stock', component: Stock, name: "stock" },
+        { path: '/fournisseur', component: Fournisseur, name: "fournisseur" },
+        { path: '/activite', component: Activite, name: "activite" }
     ]}
   ];
 
